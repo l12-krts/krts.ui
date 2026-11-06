@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "../src/styles/theme.css";
+@source "../src";
+@source "./";
+
+html {
+  background: var(--krts-bg);
+  color: var(--krts-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv11", "ss01";
+}

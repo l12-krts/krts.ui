@@ -1,0 +1,4 @@
+/* Entry for the precompiled stylesheet (dist/krts.css). */
+@import "tailwindcss";
+@import "./theme.css";
+@source "../";

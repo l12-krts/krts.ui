@@ -1,0 +1,152 @@
+/*
+ * krts.ui theme
+ * -------------
+ * Import this from your own Tailwind v4 entry CSS:
+ *
+ *   @import "tailwindcss";
+ *   @import "krts.ui/theme.css";
+ *   @source "../node_modules/krts.ui/dist";
+ *
+ * Every colour is a CSS variable, so you can re-theme by overriding
+ * `--krts-*` on :root (or any subtree).
+ */
+@plugin "tailwindcss-react-aria-components";
+
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  /* Values from the krts.ui Figma file, tuned for contrast. */
+  --krts-bg: #ffffff;
+  --krts-fg: #1e1e1e;
+  --krts-fg-muted: #5f5f5f; /* Figma #7e7e7e fails 4.5:1 on white for body text */
+  --krts-fg-subtle: #737373;
+  --krts-surface: #f2f2f2;
+  --krts-surface-hover: #e6e6e6;
+  --krts-surface-pressed: #d9d9d9;
+  --krts-overlay: #fafafa;
+  --krts-line: #cdcdcd;
+  --krts-line-strong: #a4a4a4;
+  --krts-line-subtle: #e6e6e6;
+
+  --krts-primary: #2a2a2a;
+  --krts-primary-hover: #3b3b3b;
+  --krts-primary-pressed: #4e4e4e;
+  --krts-primary-line: #4e4e4e;
+  --krts-primary-fg: #ffffff;
+
+  --krts-danger: #a83333;
+  --krts-danger-hover: #b94343;
+  --krts-danger-pressed: #c85151;
+  --krts-danger-line: #d04b4b;
+  --krts-danger-fg: #ffffff;
+  --krts-danger-soft: #fbeaea;
+
+  --krts-success: #2f7d4f;
+  --krts-warning: #a36a12;
+  --krts-focus: #2a2a2a;
+
+  color-scheme: light;
+}
+
+:root:where(.dark, [data-theme="dark"]),
+:where(.dark, [data-theme="dark"]) {
+  --krts-bg: #111111;
+  --krts-fg: #f2f2f2;
+  --krts-fg-muted: #a8a8a8;
+  --krts-fg-subtle: #8c8c8c;
+  --krts-surface: #1e1e1e;
+  --krts-surface-hover: #2a2a2a;
+  --krts-surface-pressed: #333333;
+  --krts-overlay: #1a1a1a;
+  --krts-line: #3a3a3a;
+  --krts-line-strong: #555555;
+  --krts-line-subtle: #262626;
+
+  --krts-primary: #f2f2f2;
+  --krts-primary-hover: #e2e2e2;
+  --krts-primary-pressed: #d0d0d0;
+  --krts-primary-line: #ffffff;
+  --krts-primary-fg: #111111;
+
+  --krts-danger: #c24545;
+  --krts-danger-hover: #d05454;
+  --krts-danger-pressed: #e36a6a;
+  --krts-danger-line: #e36a6a;
+  --krts-danger-soft: #3a1a1a;
+
+  --krts-success: #5cc58a;
+  --krts-warning: #e0a84a;
+  --krts-focus: #f2f2f2;
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: "Inter", "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-bg: var(--krts-bg);
+  --color-fg: var(--krts-fg);
+  --color-fg-muted: var(--krts-fg-muted);
+  --color-fg-subtle: var(--krts-fg-subtle);
+  --color-surface: var(--krts-surface);
+  --color-surface-hover: var(--krts-surface-hover);
+  --color-surface-pressed: var(--krts-surface-pressed);
+  --color-overlay: var(--krts-overlay);
+  --color-line: var(--krts-line);
+  --color-line-strong: var(--krts-line-strong);
+  --color-line-subtle: var(--krts-line-subtle);
+  --color-primary: var(--krts-primary);
+  --color-primary-hover: var(--krts-primary-hover);
+  --color-primary-pressed: var(--krts-primary-pressed);
+  --color-primary-line: var(--krts-primary-line);
+  --color-primary-fg: var(--krts-primary-fg);
+  --color-danger: var(--krts-danger);
+  --color-danger-hover: var(--krts-danger-hover);
+  --color-danger-pressed: var(--krts-danger-pressed);
+  --color-danger-line: var(--krts-danger-line);
+  --color-danger-fg: var(--krts-danger-fg);
+  --color-danger-soft: var(--krts-danger-soft);
+  --color-success: var(--krts-success);
+  --color-warning: var(--krts-warning);
+  --color-focus: var(--krts-focus);
+}
+
+@theme {
+  /* Strong custom curves: the built-in CSS easings are too weak. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --radius-control: 8px;
+  --radius-menu: 12px;
+
+  /* The Figma file's 1px hairline, plus a soft lift for floating layers. */
+  --shadow-hairline: 0 0 1px 0 rgb(0 0 0 / 0.25);
+  --shadow-control: 0 0 1px 0 rgb(0 0 0 / 0.25), 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-float: 0 0 1px 0 rgb(0 0 0 / 0.25), 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 12px 32px -8px rgb(0 0 0 / 0.12);
+
+  --animate-krts-spin: krts-spin 600ms linear infinite;
+  --animate-krts-shimmer: krts-shimmer 1.6s linear infinite;
+  --animate-krts-indeterminate: krts-indeterminate 1.2s var(--ease-in-out) infinite;
+
+  @keyframes krts-spin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes krts-shimmer {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+  @keyframes krts-indeterminate {
+    from { transform: translateX(-100%) scaleX(0.4); }
+    to { transform: translateX(250%) scaleX(0.4); }
+  }
+}
+
+/* Reduced motion means fewer, gentler animations — not zero.
+ * Keep opacity/colour fades; drop movement. */
+@media (prefers-reduced-motion: reduce) {
+  [data-krts-motion] {
+    --krts-motion-distance: 0px;
+    --krts-motion-scale: 1;
+  }
+}

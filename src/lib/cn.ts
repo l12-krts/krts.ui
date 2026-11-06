@@ -23,7 +23,3 @@ export function composeTw<T>(
 /** Focus ring shared by every interactive control. */
 export const focusRing =
   'outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
-
-/** Press feedback: buttons must feel like they heard you. */
-export const pressScale =
-  'transition-[transform,background-color,border-color,color,box-shadow] duration-150 ease-out pressed:scale-[0.97] motion-reduce:pressed:scale-100';

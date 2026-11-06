@@ -19,6 +19,7 @@ import {
 } from 'react-aria-components';
 import { cn, composeTw } from '../lib/cn';
 import { CheckIcon, ChevronRightIcon } from './icons';
+import type { OverlayAnimation } from '../lib/config';
 import { Popover } from './Popover';
 
 export function MenuTrigger(props: MenuTriggerProps) {
@@ -34,9 +35,11 @@ export interface MenuProps<T> extends RACMenuProps<T> {
   /** Set false when rendering a Menu inline (not in a popover). */
   withPopover?: boolean;
   popoverClassName?: string;
+  /** `'fade'` (default), `'scale'` or `'none'`. */
+  animation?: OverlayAnimation;
 }
 
-export function Menu<T extends object>({ placement = 'bottom start', withPopover = true, popoverClassName, className, ...props }: MenuProps<T>) {
+export function Menu<T extends object>({ placement = 'bottom start', withPopover = true, popoverClassName, animation, className, ...props }: MenuProps<T>) {
   const menu = (
     <RACMenu
       {...props}
@@ -45,7 +48,7 @@ export function Menu<T extends object>({ placement = 'bottom start', withPopover
   );
   if (!withPopover) return menu;
   return (
-    <Popover placement={placement} className={popoverClassName}>
+    <Popover placement={placement} animation={animation} className={popoverClassName}>
       {menu}
     </Popover>
   );

@@ -11,6 +11,7 @@ import {
 import { cn, composeTw, focusRing } from '../lib/cn';
 import { Description, FieldError, Label, inputSizes } from './Field';
 import { CheckIcon, ChevronDownIcon } from './icons';
+import type { OverlayAnimation } from '../lib/config';
 import { Popover } from './Popover';
 
 export interface SelectProps<T extends object> extends Omit<RACSelectProps<T>, 'children'> {
@@ -20,6 +21,8 @@ export interface SelectProps<T extends object> extends Omit<RACSelectProps<T>, '
   items?: Iterable<T>;
   children: ReactNode | ((item: T) => ReactNode);
   size?: keyof typeof inputSizes;
+  /** Listbox animation: `'fade'` (default), `'scale'` or `'none'`. */
+  animation?: OverlayAnimation;
 }
 
 export function Select<T extends object>({
@@ -29,6 +32,7 @@ export function Select<T extends object>({
   children,
   items,
   size = 'md',
+  animation,
   className,
   ...props
 }: SelectProps<T>) {
@@ -38,7 +42,7 @@ export function Select<T extends object>({
       <RACButton
         className={cn(
           'flex w-full items-center justify-between gap-2 rounded-control border border-line bg-surface px-3.5 text-left text-fg shadow-control',
-          'transition-[border-color,background-color,transform] duration-150 ease-out hover:border-line-strong pressed:scale-[0.99]',
+          'transition-[border-color,background-color] duration-150 ease-out hover:border-line-strong pressed:bg-surface-hover',
           'group-invalid:border-danger disabled:opacity-50',
           focusRing,
           inputSizes[size],
@@ -49,7 +53,7 @@ export function Select<T extends object>({
       </RACButton>
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
-      <Popover placement="bottom start">
+      <Popover placement="bottom start" animation={animation}>
         <ListBox items={items} className="max-h-72 overflow-auto p-1.5 outline-none">
           {children}
         </ListBox>

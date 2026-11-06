@@ -3,6 +3,7 @@ import { Button as RACButton, type ButtonProps as RACButtonProps, composeRenderP
 import { mergeProps } from 'react-aria';
 import { useGestureHandlers, type GestureOptions } from '../hooks/useGesture';
 import { useSmoothPending } from '../hooks/usePerceived';
+import { useAnimatedWidth } from '../hooks/useAnimatedWidth';
 import { cn, focusRing } from '../lib/cn';
 import { Spinner } from './Spinner';
 
@@ -36,8 +37,8 @@ export function buttonStyles({
   return cn(
     'group/button relative isolate inline-flex select-none items-center justify-center whitespace-nowrap rounded-control border font-sans font-normal leading-none',
     'cursor-default [-webkit-tap-highlight-color:transparent] touch-manipulation',
-    // Press feedback: tiny scale-down tells the user they were heard.
-    'transition-[transform,background-color,border-color,color,box-shadow,opacity] duration-150 ease-out pressed:scale-[0.97] motion-reduce:pressed:scale-100',
+    // Press feedback comes from the pressed colours (Figma "Pressed" row) — no scaling.
+    'transition-[background-color,border-color,color,box-shadow,opacity] duration-150 ease-out',
     'disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none',
     focusRing,
     variants[variant],
@@ -88,7 +89,16 @@ export interface ButtonProps extends Omit<RACButtonProps, 'children'>, GesturePr
   startContent?: ReactNode;
   /** Shown after the label. */
   endContent?: ReactNode;
+  /**
+   * When the label changes ("Save" → "Saved"), glide to the new width with
+   * an ease-out curve instead of jumping. Default true (off for icon-only).
+   * Turn off if you size the button yourself (e.g. `w-full`).
+   */
+  animateWidth?: boolean;
 }
+
+const BASE_TRANSITION =
+  'background-color 150ms var(--ease-out), border-color 150ms var(--ease-out), color 150ms var(--ease-out), box-shadow 150ms var(--ease-out), opacity 150ms var(--ease-out)';
 
 /**
  * The krts.ui button. Accepts every React Aria `Button` prop plus gesture
@@ -112,6 +122,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     multiTapDelay,
     holdDuration,
     holdTickInterval,
+    animateWidth = !isIconOnly,
+    style,
     ...rest
   } = props;
 
@@ -129,6 +141,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   const { pressHandlers, pointerProps } = useGestureHandlers(gestureOpts);
   const showSpinner = useSmoothPending(!!isPending);
 
+  const { contentRef, widthStyle, widthTransition } = useAnimatedWidth({ enabled: animateWidth });
+
   const merged = hasGestures ? mergeProps(racProps, pressHandlers, pointerProps) : racProps;
 
   return (
@@ -138,14 +152,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       isPending={isPending}
       data-spinner={showSpinner || undefined}
       className={composeRenderProps(className, (cls) =>
-        buttonStyles({ variant, size, isIconOnly, className: cls }),
+        buttonStyles({ variant, size, isIconOnly, className: cn(animateWidth && 'shrink-0 overflow-hidden', cls) }),
       )}
+      style={composeRenderProps(style, (s) => ({
+        ...widthStyle,
+        ...(widthTransition ? { transition: `${BASE_TRANSITION}, ${widthTransition}` } : null),
+        ...s,
+      }))}
     >
       {composeRenderProps(children, (child) => (
         <>
           <span
+            ref={contentRef}
             className={cn(
-              'inline-flex items-center justify-center gap-[inherit] self-stretch transition-[opacity,filter] duration-200 ease-out',
+              'inline-flex shrink-0 items-center justify-center gap-[inherit] self-stretch transition-[opacity,filter] duration-200 ease-out',
               showSpinner && 'opacity-0 blur-[2px]',
             )}
           >

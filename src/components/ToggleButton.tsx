@@ -63,7 +63,7 @@ export function Segment({ children, className, ...props }: Omit<RACToggleButtonP
         className,
         cn(
           'relative inline-flex cursor-default items-center justify-center gap-2 rounded-[7px] px-3.5 whitespace-nowrap outline-none select-none',
-          'text-fg-muted transition-[color,transform] duration-200 ease-out hover:text-fg selected:text-fg pressed:scale-[0.97] disabled:opacity-40',
+          'text-fg-muted transition-colors duration-200 ease-out hover:text-fg selected:text-fg disabled:opacity-40',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
           'h-8 text-[14px] group-data-[size=md]/seg:h-10 group-data-[size=md]/seg:text-[15px]',
         ),

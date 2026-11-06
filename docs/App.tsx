@@ -53,6 +53,9 @@ import {
   toast,
   usePerceivedProgress,
   useGesture,
+  CheckIcon,
+  KrtsProvider,
+  type OverlayAnimation,
 } from 'krts.ui';
 
 /* ── docs chrome ──────────────────────────────────────────────────────── */
@@ -158,29 +161,6 @@ export function App() {
       </header>
 
       <main id="top" className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="py-16 sm:py-24">
-          <Badge tone="neutral" dot>
-            v0.1 · React Aria + Tailwind v4
-          </Badge>
-          <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-[-0.03em] text-balance sm:text-5xl">
-            Components that feel right before you notice why.
-          </h1>
-          <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-fg-muted">
-            krts.ui is an accessible React library with press feedback, origin-aware popovers, hold-to-confirm, and gesture
-            events (<code className="text-fg">onSingleTap</code>, <code className="text-fg">onDoubleTap</code>,{' '}
-            <code className="text-fg">onHold</code>) on every button.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Button variant="primary" onPress={() => document.getElementById('buttons')?.scrollIntoView({ behavior: 'smooth' })}>
-              Browse components
-            </Button>
-            <div className="flex h-12 items-center gap-2 rounded-control border border-line bg-surface pr-1.5 pl-4 font-mono text-[14px] shadow-control">
-              npm i krts.ui
-              <CopyButton value="npm i krts.ui" variant="ghost" size="sm" label="Copy install command" />
-            </div>
-          </div>
-        </div>
-
         <ButtonsSection />
         <HoldSection />
         <GesturesSection />
@@ -210,7 +190,7 @@ function ButtonsSection() {
     <Section
       id="buttons"
       title="Buttons"
-      lede="Four variants from the Figma file. Every button scales to 0.97 when pressed, so it feels like it heard you. Hover styles only apply on devices that can hover."
+      lede="Four variants from the Figma file. Pressing shows the Figma pressed colours instead of scaling. When a button's label changes, it eases to its new width instead of jumping. Hover styles only apply on devices that can hover."
     >
       <Demo
         code={`<Button variant="primary">Primary Button</Button>
@@ -222,6 +202,14 @@ function ButtonsSection() {
         <Button variant="secondary">Secondary Button</Button>
         <Button variant="danger">Danger</Button>
         <Button variant="ghost">Ghost Button</Button>
+      </Demo>
+      <Demo
+        label="Content changes ease to the new width"
+        code={`<Button variant="primary" onPress={follow}>
+  {following ? 'Following' : 'Follow'}
+</Button>`}
+      >
+        <WidthDemo />
       </Demo>
       <Demo label="Sizes & disabled">
         <Button variant="primary" size="xs">Extra small</Button>
@@ -254,6 +242,32 @@ function ButtonsSection() {
         </Button>
       </Demo>
     </Section>
+  );
+}
+
+function WidthDemo() {
+  const [following, setFollowing] = useState(false);
+  const steps = ['Save', 'Saving…', 'Saved to your workspace'] as const;
+  const [step, setStep] = useState(0);
+  const [verbose, setVerbose] = useState(false);
+  return (
+    <>
+      <Button variant={following ? 'secondary' : 'primary'} onPress={() => setFollowing((f) => !f)} startContent={following ? <CheckIcon size={16} /> : null}>
+        {following ? 'Following' : 'Follow'}
+      </Button>
+      <Button
+        onPress={() => {
+          setStep(1);
+          setTimeout(() => setStep(2), 900);
+          setTimeout(() => setStep(0), 2600);
+        }}
+      >
+        {steps[step]}
+      </Button>
+      <Button variant="ghost" onPress={() => setVerbose((v) => !v)}>
+        {verbose ? 'Show fewer details' : 'More'}
+      </Button>
+    </>
   );
 }
 
@@ -327,7 +341,7 @@ function GesturesSection() {
             onHoldEnd={(e) => push(`holdEnd after ${(e.duration / 1000).toFixed(1)}s`)}
             onSwipe={(e) => push(`swipe ${e.direction} (${e.velocity.toFixed(2)}px/ms)`)}
             holdDuration={600}
-            className="grid h-56 place-items-center rounded-[14px] border border-dashed border-line-strong bg-surface/50 text-center text-fg-muted transition-[background-color,transform] duration-150 ease-out data-[pressed]:scale-[0.99] data-[holding]:bg-surface-hover data-[held]:bg-surface-pressed"
+            className="grid h-56 place-items-center rounded-[14px] border border-dashed border-line-strong bg-surface/50 text-center text-fg-muted transition-[background-color] duration-150 ease-out data-[pressed]:bg-surface data-[holding]:bg-surface-hover data-[held]:bg-surface-pressed"
           >
             <div>
               <div className="text-[15px] text-fg">Tap, double-tap, hold, or swipe</div>
@@ -360,7 +374,7 @@ function GesturesSection() {
           }}
           onSingleTap={() => toast('Double-tap to like', { duration: 1500 })}
           startContent={
-            <span className={'text-danger transition-transform duration-300 ease-out ' + (heart ? 'scale-125' : 'scale-100')}>
+            <span className={'transition-colors duration-200 ease-out ' + (heart ? 'text-danger-hover' : 'text-danger')}>
               <Ico d={I.heart} fill={likes > 0} />
             </span>
           }
@@ -420,9 +434,10 @@ function HookDemo() {
         tabIndex={0}
         aria-pressed={selected}
         className={
-          'flex h-24 w-40 flex-col items-center justify-center rounded-[12px] border text-sm outline-none select-none transition-[transform,background-color,border-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ' +
-          (selected ? 'border-primary-line bg-primary text-primary-fg ' : 'border-line bg-surface text-fg ') +
-          (isPressed ? 'scale-[0.97]' : '')
+          'flex h-24 w-40 flex-col items-center justify-center rounded-[12px] border text-sm outline-none select-none transition-[background-color,border-color] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ' +
+          (selected
+            ? 'border-primary-line ' + (isPressed ? 'bg-primary-pressed text-primary-fg' : 'bg-primary text-primary-fg')
+            : 'border-line ' + (isPressed ? 'bg-surface-pressed text-fg' : 'bg-surface text-fg'))
         }
       >
         <span>photo.jpg</span>
@@ -482,54 +497,79 @@ function TooltipSection() {
 
 function DropdownSection() {
   const [sort, setSort] = useState<Set<string | number> | 'all'>(new Set(['recent']));
+  const [animation, setAnimation] = useState<OverlayAnimation>('fade');
   return (
     <Section
       id="dropdowns"
       title="Dropdowns"
-      lede="The Figma dropdown button: label, divider, chevron. Menus grow out of the button and close faster than they open. Highlighting items with the keyboard is instant, never animated."
+      lede="The Figma dropdown button: label, divider, chevron. Menus and selects fade in quickly by default, which suits dashboards where menus open all day. Switch to a scale animation per component or app-wide. Highlighting items with the keyboard is never animated."
     >
       <Demo
-        className="items-start"
-        code={`<DropdownButton label="Primary Button" onAction={(key) => …}>
-  <MenuItem id="new" shortcut="⌘N">New file</MenuItem>
-  <MenuItem id="dup">Duplicate</MenuItem>
-  <MenuSeparator />
-  <MenuItem id="del" variant="danger">Delete</MenuItem>
-</DropdownButton>`}
-      >
-        <DropdownButton label="Primary Button" onAction={(k) => toast(`Action: ${String(k)}`)}>
-          <MenuItem id="new" shortcut="⌘N">New file</MenuItem>
-          <MenuItem id="open" shortcut="⌘O">Open…</MenuItem>
-          <MenuItem id="dup" description="Creates a copy next to the original">Duplicate</MenuItem>
-          <MenuSeparator />
-          <MenuItem id="del" variant="danger" shortcut="⌫">Delete</MenuItem>
-        </DropdownButton>
-        <DropdownButton
-          label="Secondary Button"
-          variant="secondary"
-          selectionMode="single"
-          selectedKeys={sort}
-          onSelectionChange={setSort}
+        label="Menu animation"
+        code={`// one menu
+<Select animation="scale" … />
+<DropdownButton animation="none" … />
+
+// app-wide default
+<KrtsProvider menuAnimation="scale">…</KrtsProvider>`}
         >
-          <MenuSection title="Sort by">
-            <MenuItem id="recent">Most recent</MenuItem>
-            <MenuItem id="name">Name</MenuItem>
-            <MenuItem id="size">Size</MenuItem>
-          </MenuSection>
-        </DropdownButton>
-        <SplitButton label="Merge" onAction={() => toast.success('Merged')} onMenuAction={(k) => toast(`${String(k)}`)}>
-          <MenuItem id="Squash and merge">Squash and merge</MenuItem>
-          <MenuItem id="Rebase and merge">Rebase and merge</MenuItem>
-        </SplitButton>
-      </Demo>
-      <div className="grid max-w-md gap-4">
-        <Select label="Framework" placeholder="Choose one" defaultSelectedKey="react">
-          <SelectItem id="react">React</SelectItem>
-          <SelectItem id="vue">Vue</SelectItem>
-          <SelectItem id="svelte">Svelte</SelectItem>
-          <SelectItem id="solid">Solid</SelectItem>
-        </Select>
-      </div>
+          <SegmentedControl
+            aria-label="Menu animation"
+            selectedKeys={[animation]}
+            onSelectionChange={(keys) => {
+              const k = [...keys][0];
+              if (k) setAnimation(k as OverlayAnimation);
+            }}
+          >
+            <Segment id="fade">Fade (default)</Segment>
+            <Segment id="scale">Scale</Segment>
+            <Segment id="none">None</Segment>
+          </SegmentedControl>
+        </Demo>
+        <KrtsProvider menuAnimation={animation}>
+        <Demo
+          className="items-start"
+          code={`<DropdownButton label="Primary Button" onAction={(key) => …}>
+    <MenuItem id="new" shortcut="⌘N">New file</MenuItem>
+    <MenuItem id="dup">Duplicate</MenuItem>
+    <MenuSeparator />
+    <MenuItem id="del" variant="danger">Delete</MenuItem>
+  </DropdownButton>`}
+        >
+          <DropdownButton label="Primary Button" onAction={(k) => toast(`Action: ${String(k)}`)}>
+            <MenuItem id="new" shortcut="⌘N">New file</MenuItem>
+            <MenuItem id="open" shortcut="⌘O">Open…</MenuItem>
+            <MenuItem id="dup" description="Creates a copy next to the original">Duplicate</MenuItem>
+            <MenuSeparator />
+            <MenuItem id="del" variant="danger" shortcut="⌫">Delete</MenuItem>
+          </DropdownButton>
+          <DropdownButton
+            label="Secondary Button"
+            variant="secondary"
+            selectionMode="single"
+            selectedKeys={sort}
+            onSelectionChange={setSort}
+          >
+            <MenuSection title="Sort by">
+              <MenuItem id="recent">Most recent</MenuItem>
+              <MenuItem id="name">Name</MenuItem>
+              <MenuItem id="size">Size</MenuItem>
+            </MenuSection>
+          </DropdownButton>
+          <SplitButton label="Merge" onAction={() => toast.success('Merged')} onMenuAction={(k) => toast(`${String(k)}`)}>
+            <MenuItem id="Squash and merge">Squash and merge</MenuItem>
+            <MenuItem id="Rebase and merge">Rebase and merge</MenuItem>
+          </SplitButton>
+        </Demo>
+        <div className="grid max-w-md gap-4">
+          <Select label="Framework" placeholder="Choose one" defaultSelectedKey="react">
+            <SelectItem id="react">React</SelectItem>
+            <SelectItem id="vue">Vue</SelectItem>
+            <SelectItem id="svelte">Svelte</SelectItem>
+            <SelectItem id="solid">Solid</SelectItem>
+          </Select>
+        </div>
+      </KrtsProvider>
     </Section>
   );
 }

@@ -1,0 +1,3 @@
+/* Convenience entry for Tailwind users: theme + scan the built package. */
+@import "./theme.css";
+@source "../../dist";

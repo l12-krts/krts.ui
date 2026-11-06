@@ -1,4 +1,4 @@
-import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
+import { forwardRef, useState, type HTMLAttributes, type ReactNode } from 'react';
 import { Link as RACLink, Separator as RACSeparator, type LinkProps, type SeparatorProps } from 'react-aria-components';
 import { cn, composeTw, focusRing } from '../lib/cn';
 
@@ -86,6 +86,8 @@ export interface AvatarProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 export function Avatar({ src, alt, name = '', size = 36, className, ...props }: AvatarProps) {
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
+  const loaded = !!src && loadedSrc === src;
   const initials = name
     .split(/\s+/)
     .filter(Boolean)
@@ -103,7 +105,17 @@ export function Avatar({ src, alt, name = '', size = 36, className, ...props }: 
       )}
       style={{ width: size, height: size, fontSize: size * 0.38, ...props.style }}
     >
-      {src ? <img src={src} alt="" className="size-full object-cover" draggable={false} /> : initials}
+      {/* Initials sit underneath; the photo fades in once it has loaded instead of popping. */}
+      {(!src || !loaded) && initials}
+      {src && (
+        <img
+          src={src}
+          alt=""
+          draggable={false}
+          onLoad={() => setLoadedSrc(src)}
+          className={cn('absolute inset-0 size-full object-cover transition-opacity duration-300 ease-out', loaded ? 'opacity-100' : 'opacity-0')}
+        />
+      )}
     </span>
   );
 }

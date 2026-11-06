@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { MenuProps as RACMenuProps, PopoverProps } from 'react-aria-components';
 import { cn } from '../lib/cn';
+import type { OverlayAnimation } from '../lib/config';
 import { Button, type ButtonProps } from './Button';
 import { ChevronDownIcon } from './icons';
 import { Menu, MenuTrigger } from './Menu';
@@ -14,6 +15,8 @@ export interface DropdownButtonProps<T> extends Omit<RACMenuProps<T>, 'children'
   size?: ButtonProps['size'];
   isDisabled?: boolean;
   placement?: PopoverProps['placement'];
+  /** Menu animation: `'fade'` (default), `'scale'` or `'none'`. */
+  animation?: OverlayAnimation;
   className?: string;
 }
 
@@ -75,7 +78,7 @@ export function SplitButton<T extends object>({
 }: SplitButtonProps<T>) {
   return (
     <div className={cn('inline-flex', className)} role="group">
-      <Button variant={variant} size={size} isDisabled={isDisabled} onPress={onAction} className="rounded-r-none border-r-0 pressed:scale-100">
+      <Button variant={variant} size={size} isDisabled={isDisabled} onPress={onAction} className="rounded-r-none border-r-0">
         {label}
       </Button>
       <MenuTrigger>
@@ -88,7 +91,6 @@ export function SplitButton<T extends object>({
           className={cn(
             'group rounded-l-none',
             variant === 'primary' ? 'border-l-primary-line' : variant === 'danger' ? 'border-l-danger-line' : 'border-l-line',
-            'pressed:scale-100',
           )}
         >
           <ChevronDownIcon size={size === 'md' ? 20 : 16} className="transition-transform duration-200 ease-out group-aria-expanded:rotate-180" />

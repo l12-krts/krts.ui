@@ -339,7 +339,7 @@ function ToastItem({
             t.action!.onPress();
             dismiss(t.id);
           }}
-          className="h-7 shrink-0 rounded-md bg-primary px-2.5 text-[13px] font-medium text-primary-fg transition-transform duration-150 ease-out outline-none active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          className="h-7 shrink-0 rounded-md bg-primary px-2.5 text-[13px] font-medium text-primary-fg transition-opacity duration-150 ease-out outline-none hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
           {t.action.label}
         </button>

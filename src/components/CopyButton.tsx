@@ -26,11 +26,11 @@ export function CopyButton({ value, label = 'Copy', copiedLabel = 'Copied', onCo
     <span className="relative grid size-4 place-items-center">
       <CopyIcon
         size={16}
-        className={cn('absolute transition-[opacity,filter,transform] duration-200 ease-out', copied ? 'scale-75 opacity-0 blur-[2px]' : 'opacity-100')}
+        className={cn('absolute transition-[opacity,filter] duration-200 ease-out', copied ? 'opacity-0 blur-[2px]' : 'opacity-100')}
       />
       <CheckIcon
         size={16}
-        className={cn('absolute transition-[opacity,filter,transform] duration-200 ease-out', copied ? 'opacity-100' : 'scale-75 opacity-0 blur-[2px]')}
+        className={cn('absolute transition-[opacity,filter] duration-200 ease-out', copied ? 'opacity-100' : 'opacity-0 blur-[2px]')}
       />
     </span>
   );

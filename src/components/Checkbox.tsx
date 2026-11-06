@@ -27,8 +27,7 @@ export function Checkbox({ children, className, ...props }: CheckboxProps) {
           <span
             className={cn(
               'grid size-6 shrink-0 place-items-center rounded-[7px] border shadow-control',
-              'transition-[background-color,border-color,transform] duration-150 ease-out',
-              'group-pressed:scale-[0.92] motion-reduce:group-pressed:scale-100',
+              'transition-[background-color,border-color] duration-150 ease-out',
               'group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-focus',
               isSelected || isIndeterminate
                 ? 'border-primary-line bg-primary text-primary-fg group-hover:bg-primary-hover'

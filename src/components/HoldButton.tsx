@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Button as RACButton, type ButtonProps as RACButtonProps } from 'react-aria-components';
 import { mergeProps } from 'react-aria';
+import { useAnimatedWidth } from '../hooks/useAnimatedWidth';
 import { useGestureHandlers, type HoldGestureEvent } from '../hooks/useGesture';
 import { cn, focusRing } from '../lib/cn';
 import { dispatchKrtsEvent, KRTS_EVENTS } from '../lib/dom-events';
@@ -27,6 +28,8 @@ export interface HoldButtonProps
   resetAfter?: number;
   variant?: HoldButtonVariant;
   size?: 'sm' | 'md';
+  /** Glide to the new width when the label swaps (hint / done). Default true. */
+  animateWidth?: boolean;
   className?: string;
 }
 
@@ -64,6 +67,7 @@ export const HoldButton = forwardRef<HTMLButtonElement, HoldButtonProps>(functio
     size = 'md',
     className,
     isDisabled,
+    animateWidth = true,
     ...rest
   },
   ref,
@@ -109,6 +113,8 @@ export const HoldButton = forwardRef<HTMLButtonElement, HoldButtonProps>(functio
     }
   };
 
+  const { contentRef, widthStyle, widthTransition } = useAnimatedWidth({ enabled: animateWidth });
+
   const holding = phase === 'holding';
   const confirmed = phase === 'confirmed';
   const label = phase === 'hint' ? hint : confirmed && confirmedContent !== null ? (confirmedContent ?? <><CheckIcon size={16} /> Done</>) : children;
@@ -130,16 +136,24 @@ export const HoldButton = forwardRef<HTMLButtonElement, HoldButtonProps>(functio
       className={cn(
         'group/hold relative isolate inline-flex select-none items-center justify-center overflow-hidden whitespace-nowrap rounded-control border font-sans leading-none shadow-control',
         'cursor-default touch-manipulation [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none]',
-        'transition-[transform,background-color,border-color,color] duration-150 ease-out',
-        'data-[holding]:scale-[0.97] motion-reduce:data-[holding]:scale-100',
+        'transition-[background-color,border-color,color] duration-150 ease-out',
         'disabled:cursor-not-allowed disabled:opacity-45',
         focusRing,
         size === 'md' ? 'h-12 px-[18px] text-base' : 'h-9 px-3.5 text-sm',
+        animateWidth && 'shrink-0',
         bases[variant],
         className,
       )}
+      style={{
+        ...widthStyle,
+        ...(widthTransition
+          ? { transition: `background-color 150ms var(--ease-out), border-color 150ms var(--ease-out), color 150ms var(--ease-out), ${widthTransition}` }
+          : null),
+      }}
     >
-      <span className="relative inline-flex items-center gap-2">{content}</span>
+      <span ref={contentRef} className="relative inline-flex shrink-0 items-center gap-2">
+        {content}
+      </span>
       {/* The fill: a clipped copy of the label so the text colour flips exactly at the edge. */}
       <span
         aria-hidden

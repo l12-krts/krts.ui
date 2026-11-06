@@ -34,7 +34,11 @@ export function FieldError(props: FieldErrorProps) {
   return (
     <RACFieldError
       {...props}
-      className={composeTw(props.className, 'text-[13px] text-danger')}
+      className={composeTw(
+        props.className,
+        // Errors appear mid-form; ease them in so the layout change isn't jarring.
+        'text-[13px] text-danger transition-[opacity,translate] duration-200 ease-out starting:-translate-y-1 starting:opacity-0 motion-reduce:starting:translate-y-0',
+      )}
     />
   );
 }
@@ -139,7 +143,7 @@ export function SearchField({ label, description, errorMessage, placeholder = 'S
         <RACButton
           className={cn(
             'mr-2 grid size-7 place-items-center rounded-md text-fg-subtle outline-none',
-            'transition-[opacity,background-color,transform] duration-150 ease-out hover:bg-surface-hover pressed:scale-[0.94]',
+            'transition-[opacity,background-color] duration-150 ease-out hover:bg-surface-hover pressed:bg-surface-pressed',
             'focus-visible:ring-2 focus-visible:ring-focus/40 group-data-[empty]:pointer-events-none group-data-[empty]:opacity-0',
           )}
         >

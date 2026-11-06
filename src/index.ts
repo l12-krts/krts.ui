@@ -1,6 +1,7 @@
 // Utilities
 export { cn, composeTw, focusRing } from './lib/cn';
 export { KRTS_EVENTS, dispatchKrtsEvent, type KrtsEventName } from './lib/dom-events';
+export { KrtsProvider, useKrtsConfig, type KrtsConfig, type OverlayAnimation } from './lib/config';
 
 // Hooks
 export {
@@ -15,6 +16,7 @@ export {
   type UseGestureResult,
 } from './hooks/useGesture';
 export { usePerceivedProgress, usePrefersReducedMotion, useSmoothPending } from './hooks/usePerceived';
+export { useAnimatedWidth, type AnimatedWidthOptions } from './hooks/useAnimatedWidth';
 
 // Components
 export { Button, buttonStyles, type ButtonProps, type ButtonSize, type ButtonVariant } from './components/Button';

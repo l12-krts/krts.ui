@@ -45,8 +45,7 @@ export function Radio({ children, className, ...props }: RadioProps) {
           <span
             className={cn(
               'relative grid size-6 shrink-0 place-items-center rounded-full border shadow-control',
-              'transition-[background-color,border-color,transform] duration-150 ease-out',
-              'group-pressed:scale-[0.92] motion-reduce:group-pressed:scale-100',
+              'transition-[background-color,border-color] duration-150 ease-out',
               'group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-focus',
               rp.isSelected
                 ? 'border-primary-line bg-primary group-hover:bg-primary-hover'

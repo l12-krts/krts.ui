@@ -6,7 +6,7 @@ An accessible React UI library built on [React Aria Components](https://react-sp
 - **`HoldButton`.** Hold to confirm, instead of an "Are you sure?" dialog.
 - **Tooltips that feel fast.** After the first tooltip opens, its neighbours open instantly with no animation.
 - **Perceived-performance helpers.** No-flicker pending states, progress that is fast at first and only hits 100% when the work is done, skeletons, and toasts with Undo for optimistic updates.
-- **Motion details:** buttons scale slightly when pressed, popovers grow from their trigger, exits are faster than entrances, transitions use strong ease-out curves, hover styles only apply on devices that can hover, and `prefers-reduced-motion` is respected.
+- **Motion only where it helps:** buttons don't scale when pressed; they use the Figma pressed colours instead. When a button's label changes, it eases to its new width. Menus and selects use a quick fade by default (suited to dashboards), with a scale animation available. Sliders glide on clicks and key presses but follow your finger exactly while dragging. Exits are faster than entrances, hover styles only apply on devices that can hover, and `prefers-reduced-motion` is respected.
 
 The visual design comes from the krts.ui Figma file: monochrome Inter, 48px controls, 8px radius, 1px hairline borders and shadows, and the split dropdown button. It is refined for contrast and adds a dark theme.
 
@@ -71,6 +71,31 @@ export function App() {
   );
 }
 ```
+
+## Animation options
+
+### Menus, selects and popovers
+
+```tsx
+<Select animation="scale" …/>          // grows out of its trigger
+<DropdownButton animation="none" …/>   // instant
+<Menu animation="fade" …/>             // default: a quick 120ms fade
+
+// Set the default for the whole app (a prop on a component still wins)
+<KrtsProvider menuAnimation="scale">
+  <App />
+</KrtsProvider>
+```
+
+### Button width
+
+When a `Button`'s or `HoldButton`'s content changes ("Follow" → "Following ✓"), the button eases to its new width over 250ms with an ease-out curve instead of jumping. The first layout and the web-font swap are not animated. Width animation is off for icon-only buttons. Pass `animateWidth={false}` if you size the button yourself, for example with `w-full`.
+
+The same behaviour is available for your own components through `useAnimatedWidth()`.
+
+### Slider
+
+Clicking the track, pressing arrow keys, or changing the value in code makes the thumb and fill glide there with a 200ms ease-out. While you drag, the thumb follows the pointer exactly, with no lag. On hover and while dragging, a soft halo appears around the thumb instead of scaling it.
 
 ## Gesture events
 
@@ -140,7 +165,8 @@ The fill moves slowly and linearly while the user holds, and snaps back in 200ms
 | Navigation | `Tabs` (pill and underline styles), `SegmentedControl`, `Link`, `Accordion`, `Disclosure` |
 | Feedback | `Toaster` + `toast()`, `ProgressBar`, `Meter`, `Spinner`, `Skeleton` |
 | Display | `Badge`, `Avatar`, `Kbd`, `Card`, `Separator` |
-| Hooks | `useGesture`, `useGestureHandlers`, `useSmoothPending`, `usePerceivedProgress`, `usePrefersReducedMotion` |
+| Hooks | `useGesture`, `useGestureHandlers`, `useAnimatedWidth`, `useSmoothPending`, `usePerceivedProgress`, `usePrefersReducedMotion` |
+| Config | `KrtsProvider` (`menuAnimation`), `useKrtsConfig` |
 
 ### Toasts
 

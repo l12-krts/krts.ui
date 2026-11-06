@@ -62,10 +62,9 @@ import {
 
 function Section({ id, title, lede, children }: { id: string; title: string; lede?: ReactNode; children: ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-20 border-t border-line-subtle py-14 first:border-t-0">
-      <h2 className="text-[13px] font-medium tracking-wide text-fg-subtle uppercase">{title}</h2>
-      {lede && <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-fg-muted">{lede}</p>}
-      <div className="mt-8 flex flex-col gap-8">{children}</div>
+    <section id={id} className="scroll-mt-20 border-t border-line-subtle py-8 first:border-t-0">
+      <h2 className="text-[13px] font-medium tracking-wide text-fg-subtle">{title}</h2>
+      <div className="mt-4 flex flex-col gap-8">{children}</div>
     </section>
   );
 }
@@ -141,7 +140,7 @@ export function App() {
       <header className="sticky top-0 z-40 border-b border-line-subtle bg-bg/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4 sm:px-6">
           <a href="#top" className="text-[15px] font-semibold tracking-tight">
-            krts<span className="text-fg-subtle">.ui</span>
+            krts.ui<span className="text-fg-subtle">/docs</span>
           </a>
           <nav className="hidden gap-4 text-sm text-fg-muted lg:flex">
             {nav.map(([id, label]) => (
@@ -161,6 +160,7 @@ export function App() {
       </header>
 
       <main id="top" className="mx-auto max-w-6xl px-4 sm:px-6">
+        <HeroSection></HeroSection>
         <ButtonsSection />
         <HoldSection />
         <GesturesSection />
@@ -169,11 +169,10 @@ export function App() {
         <FormsSection />
         <NavigationSection />
         <OverlaySection />
-        <FeedbackSection />
         <DisplaySection />
 
         <footer className="border-t border-line-subtle py-10 text-sm text-fg-subtle">
-          krts.ui — MIT. Built on <Link href="https://react-spectrum.adobe.com/react-aria/">React Aria</Link> and{' '}
+          krts.ui - Built on <Link href="https://react-spectrum.adobe.com/react-aria/">React Aria</Link> and{' '}
           <Link href="https://tailwindcss.com">Tailwind CSS</Link>.
         </footer>
       </main>
@@ -218,7 +217,7 @@ function ButtonsSection() {
         <Button isDisabled>Disabled</Button>
       </Demo>
       <Demo
-        label="Pending: no spinner for fast work (<150ms); once shown, it stays at least 500ms so it never flickers"
+        label="Buttons for actions that take 500+ ms should have a spinner"
         code={`<Button variant="primary" isPending={saving} onPress={save}>Save changes</Button>`}
       >
         <Button
@@ -344,8 +343,8 @@ function GesturesSection() {
             className="grid h-56 place-items-center rounded-[14px] border border-dashed border-line-strong bg-surface/50 text-center text-fg-muted transition-[background-color] duration-150 ease-out data-[pressed]:bg-surface data-[holding]:bg-surface-hover data-[held]:bg-surface-pressed"
           >
             <div>
-              <div className="text-[15px] text-fg">Tap, double-tap, hold, or swipe</div>
-              <div className="mt-1 text-sm">Focus it and hold Space for keyboard holds</div>
+              <div className="text-[15px] text-fg">Gesture Pad</div>
+              <div className="mt-1 text-sm">Tap, Double tap, Swipe or Hold</div>
             </div>
           </GestureArea>
         </div>
@@ -506,12 +505,6 @@ function DropdownSection() {
     >
       <Demo
         label="Menu animation"
-        code={`// one menu
-<Select animation="scale" … />
-<DropdownButton animation="none" … />
-
-// app-wide default
-<KrtsProvider menuAnimation="scale">…</KrtsProvider>`}
         >
           <SegmentedControl
             aria-label="Menu animation"
@@ -611,7 +604,7 @@ function FormsSection() {
           <TextField label="Email" type="email" defaultValue="Text Written" isInvalid errorMessage="Enter a valid email address." />
           <SearchField label="Search" />
           <NumberField label="Quantity" defaultValue={2} minValue={0} />
-          <TextAreaField label="Message" placeholder="Say hello…" description="Markdown is supported." />
+          <TextAreaField label="Message" placeholder="Say hello…" />
         </div>
       </div>
     </Section>
@@ -666,6 +659,9 @@ function OverlaySection() {
   return (
     <Section id="overlays" title="Overlays" lede="Modals stay centred, because they aren't attached to a trigger. Drawers slide in by their own size (translate percentages) on an iOS-style curve.">
       <Demo>
+        <Card className='flex flex-col gap-0.5'>
+          <CardHeader title="Dialogs" />
+        <div className='flex flex-row gap-2'>
         <DialogTrigger>
           <Button variant="primary">Open dialog</Button>
           <Modal>
@@ -733,121 +729,22 @@ function OverlaySection() {
             </Dialog>
           </Drawer>
         </DialogTrigger>
-      </Demo>
-    </Section>
-  );
-}
-
-function FeedbackSection() {
-  const [running, setRunning] = useState(false);
-  const [done, setDone] = useState(false);
-  const progress = usePerceivedProgress(running, done, { expectedDuration: 2500 });
-  const [loaded, setLoaded] = useState(true);
-  const [archived, setArchived] = useState<string[]>([]);
-  const inbox = ['Design review notes', 'Q3 roadmap draft', 'Launch checklist'].filter((x) => !archived.includes(x));
-
-  return (
-    <Section
-      id="feedback"
-      title="Feedback & perceived speed"
-      lede="Small, honest tricks that make waiting feel shorter: update the UI right away and offer Undo, show progress that moves quickly at first, use skeletons shaped like the real content, and spin spinners fast."
-    >
-      <div className="grid gap-8 md:grid-cols-2">
-        <Card>
-          <CardHeader title="Optimistic update + Undo" description="Archive happens instantly; Undo is a toast away." />
-          <ul className="flex flex-col">
-            {inbox.map((item) => (
-              <li key={item} className="flex items-center justify-between gap-2 border-t border-line-subtle py-2.5 first:border-t-0">
-                <span className="text-[15px]">{item}</span>
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  onPress={() => {
-                    setArchived((a) => [...a, item]);
-                    toast('Conversation archived', {
-                      description: item,
-                      action: { label: 'Undo', onPress: () => setArchived((a) => a.filter((x) => x !== item)) },
-                    });
-                  }}
-                >
-                  Archive
-                </Button>
-              </li>
-            ))}
-            {inbox.length === 0 && <li className="py-2.5 text-sm text-fg-subtle">Inbox zero.</li>}
-          </ul>
+        </div>
         </Card>
-        <Card>
-          <CardHeader title="Perceived progress" description="Fast at first, slows near the end, and only reaches 100% when the work is actually done." />
-          <ProgressBar label="Uploading" value={progress} />
-          <div className="mt-4 flex gap-2">
-            <Button
-              size="sm"
-              variant="primary"
-              isDisabled={running && !done}
-              onPress={() => {
-                setDone(false);
-                setRunning(true);
-                setTimeout(() => setDone(true), 3200);
-              }}
-            >
-              Start upload
-            </Button>
-            <Button
-              size="sm"
-              onPress={() => {
-                setRunning(false);
-                setDone(false);
-              }}
-            >
-              Reset
-            </Button>
-          </div>
-          <div className="mt-5">
-            <ProgressBar aria-label="Loading" isIndeterminate />
-          </div>
-        </Card>
-        <Card>
-          <CardHeader
-            title="Skeletons"
-            description="Placeholders shaped like the content, so nothing jumps when it loads."
-            action={
-              <Switch size="sm" isSelected={loaded} onChange={setLoaded}>
-                Loaded
-              </Switch>
-            }
-          />
-          <div className="flex items-center gap-3">
-            {loaded ? <Avatar name="Ada Lovelace" size={44} /> : <Skeleton circle className="size-11" />}
-            <div className="flex flex-1 flex-col gap-2">
-              {loaded ? (
-                <>
-                  <div className="text-[15px] leading-4 font-medium">Ada Lovelace</div>
-                  <div className="text-sm leading-4 text-fg-muted">Analytical Engine, Inc.</div>
-                </>
-              ) : (
-                <>
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-4 w-48" />
-                </>
-              )}
-            </div>
-          </div>
-        </Card>
-        <Card>
-          <CardHeader title="Toasts" description="Swipe to dismiss. Timers pause while you hover or switch tabs." />
+                <Card>
+          <CardHeader title="Toasts" />
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" onPress={() => toast('Event created', { description: 'Friday, 6 Nov at 4:00 PM' })}>
+            <Button size="md" onPress={() => toast('Event created', { description: 'Friday, 6 Nov at 4:00 PM' })}>
               Default
             </Button>
-            <Button size="sm" onPress={() => toast.success('Saved')}>
+            <Button size="md" variant='primary' onPress={() => toast.success('Saved')}>
               Success
             </Button>
-            <Button size="sm" onPress={() => toast.error('Payment failed', { description: 'Your card was declined.' })}>
+            <Button size="md" variant='danger' onPress={() => toast.error('Payment failed', { description: 'Your card was declined.' })}>
               Error
             </Button>
             <Button
-              size="sm"
+              size="md"
               onPress={() =>
                 toast.promise(new Promise((r) => setTimeout(r, 1800)), {
                   loading: 'Deploying…',
@@ -859,14 +756,12 @@ function FeedbackSection() {
               Promise
             </Button>
           </div>
-          <div className="mt-6">
-            <Meter label="Storage" value={78} />
-          </div>
         </Card>
-      </div>
+      </Demo>
     </Section>
   );
 }
+
 
 function DisplaySection() {
   return (
@@ -896,6 +791,7 @@ function DisplaySection() {
         </div>
       </Demo>
       <div className="max-w-2xl">
+        <CardHeader title="FAQ's" />
         <Accordion>
           <Disclosure title="Is it accessible?">
             Yes. Every component is built on React Aria, so keyboard navigation, focus management, and screen-reader labels come
@@ -915,3 +811,11 @@ function DisplaySection() {
 }
 
 
+function HeroSection() {
+  return(
+    <div className='w-full p-12 align-middle flex flex-col gap-2 justify-center items-center'> 
+      <h1 className='text-5xl font-semibold'>krts.ui documentation</h1> 
+      <h3 className='text-2xl text-fg-subtle font-regular'>Some examples of krts.ui library and the gesture engine being put to use.</h3> 
+    </div>
+  );
+}

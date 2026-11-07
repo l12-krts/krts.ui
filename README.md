@@ -2,14 +2,6 @@
 
 An accessible React UI library built on [React Aria Components](https://react-spectrum.adobe.com/react-aria/) and [Tailwind CSS v4](https://tailwindcss.com).
 
-- **Gesture events on every button.** `onSingleTap`, `onDoubleTap`, `onMultiTap`, `onHold`, `onHoldTick` (hold for N seconds), `onSwipe`. They work with mouse, touch, pen, and keyboard, and each one also fires a bubbling `krts:*` DOM event.
-- **`HoldButton`.** Hold to confirm, instead of an "Are you sure?" dialog.
-- **Tooltips that feel fast.** After the first tooltip opens, its neighbours open instantly with no animation.
-- **Perceived-performance helpers.** No-flicker pending states, progress that is fast at first and only hits 100% when the work is done, skeletons, and toasts with Undo for optimistic updates.
-- **Motion only where it helps:** buttons don't scale when pressed; they use the Figma pressed colours instead. When a button's label changes, it eases to its new width. Menus and selects use a quick fade by default (suited to dashboards), with a scale animation available. Sliders glide on clicks and key presses but follow your finger exactly while dragging. Exits are faster than entrances, hover styles only apply on devices that can hover, and `prefers-reduced-motion` is respected.
-
-The visual design comes from the krts.ui Figma file: monochrome Inter, 48px controls, 8px radius, 1px hairline borders and shadows, and the split dropdown button. It is refined for contrast and adds a dark theme.
-
 ```bash
 npm i krts.ui
 ```
@@ -87,16 +79,6 @@ export function App() {
 </KrtsProvider>
 ```
 
-### Button width
-
-When a `Button`'s or `HoldButton`'s content changes ("Follow" → "Following ✓"), the button eases to its new width over 250ms with an ease-out curve instead of jumping. The first layout and the web-font swap are not animated. Width animation is off for icon-only buttons. Pass `animateWidth={false}` if you size the button yourself, for example with `w-full`.
-
-The same behaviour is available for your own components through `useAnimatedWidth()`.
-
-### Slider
-
-Clicking the track, pressing arrow keys, or changing the value in code makes the thumb and fill glide there with a 200ms ease-out. While you drag, the thumb follows the pointer exactly, with no lag. On hover and while dragging, a soft halo appears around the thumb instead of scaling it.
-
 ## Gesture events
 
 The gesture props work on `Button`, `GestureArea`, and anything that uses `useGesture`.
@@ -137,24 +119,6 @@ const { gestureProps, isPressed } = useGesture({ onDoubleTap: like });
 el.addEventListener('krts:doubletap', (e) => console.log(e.detail.count));
 ```
 
-**Keyboard:** Enter or Space taps, and holding Enter or Space holds. Moving the pointer more than `moveTolerance` (10px) cancels the tap or hold. Only the first finger on a touch screen is tracked.
-
-## HoldButton
-
-```tsx
-<HoldButton
-  onConfirm={() => remove()}
-  holdDuration={2000}              // default
-  variant="danger"                  // 'danger' | 'primary' | 'secondary'
-  confirmedContent="Deleted"
-  hint="Hold to confirm"            // shown if someone just taps
->
-  Delete project
-</HoldButton>
-```
-
-The fill moves slowly and linearly while the user holds, and snaps back in 200ms when they let go. The filled area is a clipped copy of the label, so the text colour flips exactly at the fill edge. Screen-reader activation can't hold, so it confirms straight away. The button's accessible description says how long to hold.
-
 ## Components
 
 | Category | Components |
@@ -176,18 +140,6 @@ toast.success('Uploaded', { description: 'photo.jpg' });
 toast('Conversation archived', { action: { label: 'Undo', onPress: restore } });
 toast.promise(deploy(), { loading: 'Deploying…', success: 'Live', error: 'Failed' });
 ```
-
-Toasts stack and spread out when you hover over them. Swipe or flick one to dismiss it. Timers pause while you hover and while the tab is hidden.
-
-## Perceived performance
-
-Small UI tricks that make waiting feel shorter without hiding anything from the user:
-
-- **`isPending` on `Button`** (via `useSmoothPending`): no spinner for work that finishes in under 150ms. Once a spinner is shown, it stays for at least 500ms so it never flickers.
-- **`usePerceivedProgress(running, done)`**: when you don't know the real progress, the bar moves quickly at first, slows near 92%, and jumps to 100% only when the work is actually done.
-- **Optimistic UI**: update the UI first, then offer Undo in a toast.
-- **`Skeleton`**: placeholders shaped like the real content, so the layout doesn't jump.
-- **Fast `Spinner`** (600ms per turn): a faster spinner makes the same wait feel shorter.
 
 ## Development
 

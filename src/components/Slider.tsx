@@ -9,8 +9,11 @@ import {
 } from 'react-aria-components';
 import { cn, composeTw } from '../lib/cn';
 import { Label } from './Field';
+import { agentDomProps, useKrtsAgentId } from '../agent/registry';
+import { SliderAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
-export interface SliderProps<T extends number | number[]> extends RACSliderProps<T> {
+export interface SliderProps<T extends number | number[]> extends RACSliderProps<T>, KrtsAgentProps {
   label?: ReactNode;
   /** Show the current value next to the label. Default true when a label is given. */
   showValue?: boolean;
@@ -26,11 +29,14 @@ export function Slider<T extends number | number[]>({
   showFill = true,
   thumbLabels,
   className,
+  agent,
   ...props
 }: SliderProps<T>) {
+  const agentId = useKrtsAgentId();
   return (
     <RACSlider
       {...props}
+      {...agentDomProps(agent, agentId)}
       className={composeTw(className, 'group flex w-full flex-col gap-2 select-none disabled:opacity-50')}
     >
       {(label || showValue) && (
@@ -46,6 +52,7 @@ export function Slider<T extends number | number[]>({
       <SliderTrack className="group/track relative h-7 w-full touch-none">
         {({ state }) => <TrackContents state={state} showFill={showFill} thumbLabels={thumbLabels} />}
       </SliderTrack>
+      <SliderAgent id={agentId} mark={agent} />
     </RACSlider>
   );
 }

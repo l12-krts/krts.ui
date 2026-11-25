@@ -2,6 +2,8 @@
 export { cn, composeTw, focusRing } from './lib/cn';
 export { KRTS_EVENTS, dispatchKrtsEvent, type KrtsEventName } from './lib/dom-events';
 export { KrtsProvider, useKrtsConfig, type KrtsConfig, type OverlayAnimation } from './lib/config';
+// Agent bridge: see `krts.ui/agent`. Components take an `agent` prop.
+export type { KrtsAgentMark, KrtsAgentProps } from './agent/types';
 
 // Hooks
 export {

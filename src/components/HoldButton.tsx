@@ -6,11 +6,14 @@ import { useGestureHandlers, type HoldGestureEvent } from '../hooks/useGesture';
 import { cn, focusRing } from '../lib/cn';
 import { dispatchKrtsEvent, KRTS_EVENTS } from '../lib/dom-events';
 import { CheckIcon } from './icons';
+import { useHoldButtonAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
 export type HoldButtonVariant = 'danger' | 'primary' | 'secondary';
 
 export interface HoldButtonProps
-  extends Omit<RACButtonProps, 'children' | 'onPress' | 'onPressStart' | 'onPressEnd' | 'className' | 'style'> {
+  extends Omit<RACButtonProps, 'children' | 'onPress' | 'onPressStart' | 'onPressEnd' | 'className' | 'style'>,
+    KrtsAgentProps {
   children: ReactNode;
   /** Fires once the button has been held for `holdDuration`. */
   onConfirm: (e: HoldGestureEvent | { type: 'virtual' }) => void;
@@ -68,6 +71,7 @@ export const HoldButton = forwardRef<HTMLButtonElement, HoldButtonProps>(functio
     className,
     isDisabled,
     animateWidth = true,
+    agent,
     ...rest
   },
   ref,
@@ -114,6 +118,8 @@ export const HoldButton = forwardRef<HTMLButtonElement, HoldButtonProps>(functio
   };
 
   const { contentRef, widthStyle, widthTransition } = useAnimatedWidth({ enabled: animateWidth });
+  // Agents can ask to confirm, but a person always has to approve it.
+  const agentProps = useHoldButtonAgent(agent);
 
   const holding = phase === 'holding';
   const confirmed = phase === 'confirmed';
@@ -128,6 +134,7 @@ export const HoldButton = forwardRef<HTMLButtonElement, HoldButtonProps>(functio
   return (
     <RACButton
       {...(mergeProps(rest, pressHandlers, pointerProps, { onPress }) as RACButtonProps)}
+      {...agentProps}
       ref={ref}
       isDisabled={isDisabled}
       aria-describedby={hintId}
@@ -151,7 +158,7 @@ export const HoldButton = forwardRef<HTMLButtonElement, HoldButtonProps>(functio
           : null),
       }}
     >
-      <span ref={contentRef} className="relative inline-flex shrink-0 items-center gap-2">
+      <span ref={contentRef} data-krts-hold-label className="relative inline-flex shrink-0 items-center gap-2">
         {content}
       </span>
       {/* The fill: a clipped copy of the label so the text colour flips exactly at the edge. */}

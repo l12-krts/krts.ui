@@ -7,16 +7,19 @@ import {
 } from 'react-aria-components';
 import { cn, composeTw } from '../lib/cn';
 import { Label } from './Field';
+import { useProgressAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
-export interface ProgressBarProps extends RACProgressBarProps {
+export interface ProgressBarProps extends RACProgressBarProps, KrtsAgentProps {
   label?: ReactNode;
   showValue?: boolean;
 }
 
 /** Progress uses linear motion: it's a constant process, not a gesture. */
-export function ProgressBar({ label, showValue = !!label, className, ...props }: ProgressBarProps) {
+export function ProgressBar({ label, showValue = !!label, className, agent, ...props }: ProgressBarProps) {
+  const agentProps = useProgressAgent(agent, 'progressbar');
   return (
-    <RACProgressBar {...props} className={composeTw(className, 'flex w-full flex-col gap-2')}>
+    <RACProgressBar {...props} {...agentProps} className={composeTw(className, 'flex w-full flex-col gap-2')}>
       {({ percentage, valueText, isIndeterminate }) => (
         <>
           {(label || showValue) && (
@@ -41,15 +44,16 @@ export function ProgressBar({ label, showValue = !!label, className, ...props }:
   );
 }
 
-export interface MeterProps extends RACMeterProps {
+export interface MeterProps extends RACMeterProps, KrtsAgentProps {
   label?: ReactNode;
   /** Colour the fill by thresholds (fractions of the range). */
   thresholds?: { warning: number; danger: number };
 }
 
-export function Meter({ label, thresholds = { warning: 0.7, danger: 0.9 }, className, ...props }: MeterProps) {
+export function Meter({ label, thresholds = { warning: 0.7, danger: 0.9 }, className, agent, ...props }: MeterProps) {
+  const agentProps = useProgressAgent(agent, 'meter');
   return (
-    <RACMeter {...props} className={composeTw(className, 'flex w-full flex-col gap-2')}>
+    <RACMeter {...props} {...agentProps} className={composeTw(className, 'flex w-full flex-col gap-2')}>
       {({ percentage, valueText }) => {
         const f = percentage / 100;
         const tone = f >= thresholds.danger ? 'bg-danger' : f >= thresholds.warning ? 'bg-warning' : 'bg-success';

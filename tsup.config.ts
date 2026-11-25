@@ -1,7 +1,9 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: { index: 'src/index.ts', agent: 'src/agent/index.ts' },
+  // Share chunks between the two entries in CJS too, so there is one copy of each component.
+  splitting: true,
   format: ['esm', 'cjs'],
   dts: true,
   sourcemap: true,

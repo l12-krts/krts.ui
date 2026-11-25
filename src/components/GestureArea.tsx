@@ -2,8 +2,13 @@ import { forwardRef, type HTMLAttributes } from 'react';
 import { mergeProps } from 'react-aria';
 import { useGesture, type GestureOptions } from '../hooks/useGesture';
 import { cn, focusRing } from '../lib/cn';
+import { useGestureAreaAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
-export interface GestureAreaProps extends GestureOptions, Omit<HTMLAttributes<HTMLDivElement>, keyof GestureOptions | 'onContextMenu'> {
+export interface GestureAreaProps
+  extends GestureOptions,
+    KrtsAgentProps,
+    Omit<HTMLAttributes<HTMLDivElement>, keyof GestureOptions | 'onContextMenu'> {
   /** Name for assistive tech. Gesture areas are focusable and act like buttons. */
   'aria-label'?: string;
 }
@@ -37,8 +42,21 @@ export const GestureArea = forwardRef<HTMLDivElement, GestureAreaProps>(function
     dispatchDomEvents,
     isDisabled,
     className,
+    agent,
     ...rest
   } = props;
+  const agentProps = useGestureAreaAgent(agent, {
+    onSingleTap,
+    onDoubleTap,
+    onMultiTap,
+    maxTaps,
+    onHoldStart,
+    onHold,
+    onHoldEnd,
+    holdDuration,
+    onSwipe,
+    dispatchDomEvents,
+  });
   const { gestureProps, isPressed, isHolding, didHold } = useGesture({
     onSingleTap,
     onDoubleTap,
@@ -67,6 +85,7 @@ export const GestureArea = forwardRef<HTMLDivElement, GestureAreaProps>(function
       tabIndex={isDisabled ? -1 : 0}
       aria-disabled={isDisabled || undefined}
       {...mergeProps(rest, gestureProps)}
+      {...agentProps}
       data-pressed={isPressed || undefined}
       data-holding={(isPressed && isHolding && !didHold) || undefined}
       data-held={didHold || undefined}

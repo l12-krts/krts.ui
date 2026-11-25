@@ -13,8 +13,11 @@ import { Description, FieldError, Label, inputSizes } from './Field';
 import { CheckIcon, ChevronDownIcon } from './icons';
 import type { OverlayAnimation } from '../lib/config';
 import { Popover } from './Popover';
+import { agentDomProps, useKrtsAgentId } from '../agent/registry';
+import { SelectAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
-export interface SelectProps<T extends object> extends Omit<RACSelectProps<T>, 'children'> {
+export interface SelectProps<T extends object> extends Omit<RACSelectProps<T>, 'children'>, KrtsAgentProps {
   label?: ReactNode;
   description?: ReactNode;
   errorMessage?: string;
@@ -34,10 +37,12 @@ export function Select<T extends object>({
   size = 'md',
   animation,
   className,
+  agent,
   ...props
 }: SelectProps<T>) {
+  const agentId = useKrtsAgentId();
   return (
-    <RACSelect {...props} className={composeTw(className, 'group flex flex-col gap-1.5')}>
+    <RACSelect {...props} {...agentDomProps(agent, agentId)} className={composeTw(className, 'group flex flex-col gap-1.5')}>
       {label && <Label>{label}</Label>}
       <RACButton
         className={cn(
@@ -58,6 +63,7 @@ export function Select<T extends object>({
           {children}
         </ListBox>
       </Popover>
+      <SelectAgent id={agentId} mark={agent} />
     </RACSelect>
   );
 }

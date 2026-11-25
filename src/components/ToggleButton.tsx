@@ -8,18 +8,23 @@ import {
 } from 'react-aria-components';
 import { cn, composeTw } from '../lib/cn';
 import { buttonStyles, type ButtonSize } from './Button';
+import { agentDomProps, useKrtsAgentId } from '../agent/registry';
+import { SegmentedControlAgent, useToggleButtonAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
-export interface ToggleButtonProps extends Omit<RACToggleButtonProps, 'children'> {
+export interface ToggleButtonProps extends Omit<RACToggleButtonProps, 'children'>, KrtsAgentProps {
   children?: ReactNode;
   size?: ButtonSize;
   isIconOnly?: boolean;
 }
 
 /** A button that stays pressed. Selected state uses the primary fill. */
-export function ToggleButton({ size = 'sm', isIconOnly, className, ...props }: ToggleButtonProps) {
+export function ToggleButton({ size = 'sm', isIconOnly, className, agent, ...props }: ToggleButtonProps) {
+  const agentProps = useToggleButtonAgent(agent);
   return (
     <RACToggleButton
       {...props}
+      {...agentProps}
       className={composeTw(className, (rp: { isSelected: boolean }) =>
         buttonStyles({
           variant: rp.isSelected ? 'primary' : 'secondary',
@@ -31,7 +36,7 @@ export function ToggleButton({ size = 'sm', isIconOnly, className, ...props }: T
   );
 }
 
-export interface SegmentedControlProps extends Omit<ToggleButtonGroupProps, 'children'> {
+export interface SegmentedControlProps extends Omit<ToggleButtonGroupProps, 'children'>, KrtsAgentProps {
   children: ReactNode;
   size?: 'sm' | 'md';
 }
@@ -40,10 +45,20 @@ export interface SegmentedControlProps extends Omit<ToggleButtonGroupProps, 'chi
  * iOS-style segmented control. Single selection by default; the thumb
  * slides between segments.
  */
-export function SegmentedControl({ size = 'sm', className, selectionMode = 'single', disallowEmptySelection = true, ...props }: SegmentedControlProps) {
+export function SegmentedControl({
+  size = 'sm',
+  className,
+  selectionMode = 'single',
+  disallowEmptySelection = true,
+  agent,
+  children,
+  ...props
+}: SegmentedControlProps) {
+  const agentId = useKrtsAgentId();
   return (
     <RACToggleButtonGroup
       {...props}
+      {...agentDomProps(agent, agentId)}
       selectionMode={selectionMode}
       disallowEmptySelection={disallowEmptySelection}
       data-size={size}
@@ -51,7 +66,10 @@ export function SegmentedControl({ size = 'sm', className, selectionMode = 'sing
         className,
         'group/seg inline-flex w-fit gap-0.5 rounded-[10px] border border-line bg-surface p-[3px] shadow-control',
       )}
-    />
+    >
+      {children}
+      <SegmentedControlAgent id={agentId} mark={agent} />
+    </RACToggleButtonGroup>
   );
 }
 

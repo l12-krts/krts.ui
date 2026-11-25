@@ -1,6 +1,8 @@
 import { forwardRef, useState, type HTMLAttributes, type ReactNode } from 'react';
 import { Link as RACLink, Separator as RACSeparator, type LinkProps, type SeparatorProps } from 'react-aria-components';
 import { cn, composeTw, focusRing } from '../lib/cn';
+import { useLinkAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
 /* ── Skeleton ─────────────────────────────────────────────────────────── */
 
@@ -159,10 +161,12 @@ export function Separator({ className, ...props }: SeparatorProps & { className?
   );
 }
 
-export function Link({ className, ...props }: LinkProps) {
+export function Link({ className, agent, ...props }: LinkProps & KrtsAgentProps) {
+  const agentProps = useLinkAgent(agent);
   return (
     <RACLink
       {...props}
+      {...agentProps}
       className={composeTw(
         className,
         cn(

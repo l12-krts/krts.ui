@@ -1,4 +1,12 @@
 import type { ComponentType } from 'react';
+import {
+  AgentBridgeEntry,
+  AgentComponentsEntry,
+  AgentCustomEntry,
+  AgentPermissionsEntry,
+  AgentPlaygroundEntry,
+  AgentToolsEntry,
+} from './agents';
 import { ButtonEntry, CopyButtonEntry, DropdownButtonEntry, HoldButtonEntry, SplitButtonEntry, ToggleButtonEntry } from './actions';
 import { AvatarEntry, BadgeEntry, CardEntry, IconsEntry, KbdEntry, SeparatorEntry } from './display';
 import { MeterEntry, ProgressBarEntry, SkeletonEntry, SpinnerEntry, ToastEntry } from './feedback';
@@ -135,6 +143,18 @@ export const groups: DocGroup[] = [
       { id: 'use-animated-width', title: 'useAnimatedWidth', Component: UseAnimatedWidthEntry },
       { id: 'use-prefers-reduced-motion', title: 'usePrefersReducedMotion', Component: UsePrefersReducedMotionEntry },
       { id: 'styling-utilities', title: 'Styling utilities', Component: StylingUtilitiesEntry },
+    ],
+  },
+  {
+    id: 'agents',
+    title: 'Agents',
+    entries: [
+      { id: 'agent-bridge', title: 'Agent bridge', Component: AgentBridgeEntry },
+      { id: 'agent-playground', title: 'Playground', Component: AgentPlaygroundEntry },
+      { id: 'agent-permissions', title: 'Marks & permissions', Component: AgentPermissionsEntry },
+      { id: 'agent-tools', title: 'Tools & WebMCP', Component: AgentToolsEntry },
+      { id: 'agent-custom', title: 'Your own components', Component: AgentCustomEntry },
+      { id: 'agent-components', title: 'What each component exposes', Component: AgentComponentsEntry },
     ],
   },
 ];

@@ -7,16 +7,21 @@ import {
 } from 'react-aria-components';
 import { cn, composeTw } from '../lib/cn';
 import { Description, FieldError, Label } from './Field';
+import { agentDomProps, useKrtsAgentId } from '../agent/registry';
+import { CheckboxGroupAgent, useCheckboxAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
-export interface CheckboxProps extends Omit<RACCheckboxProps, 'children'> {
+export interface CheckboxProps extends Omit<RACCheckboxProps, 'children'>, KrtsAgentProps {
   children?: ReactNode;
 }
 
 /** 24px box from the Figma file; the check draws itself in on select. */
-export function Checkbox({ children, className, ...props }: CheckboxProps) {
+export function Checkbox({ children, className, agent, ...props }: CheckboxProps) {
+  const agentProps = useCheckboxAgent(agent);
   return (
     <RACCheckbox
       {...props}
+      {...agentProps}
       className={composeTw(
         className,
         'group flex items-center gap-2.5 text-base text-fg select-none disabled:opacity-50 [-webkit-tap-highlight-color:transparent]',
@@ -55,20 +60,22 @@ export function Checkbox({ children, className, ...props }: CheckboxProps) {
   );
 }
 
-export interface CheckboxGroupProps extends Omit<RACCheckboxGroupProps, 'children'> {
+export interface CheckboxGroupProps extends Omit<RACCheckboxGroupProps, 'children'>, KrtsAgentProps {
   label?: ReactNode;
   description?: ReactNode;
   errorMessage?: string;
   children?: ReactNode;
 }
 
-export function CheckboxGroup({ label, description, errorMessage, children, className, ...props }: CheckboxGroupProps) {
+export function CheckboxGroup({ label, description, errorMessage, children, className, agent, ...props }: CheckboxGroupProps) {
+  const agentId = useKrtsAgentId();
   return (
-    <RACCheckboxGroup {...props} className={composeTw(className, 'flex flex-col gap-2.5')}>
+    <RACCheckboxGroup {...props} {...agentDomProps(agent, agentId)} className={composeTw(className, 'flex flex-col gap-2.5')}>
       {label && <Label>{label}</Label>}
       {children}
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
+      <CheckboxGroupAgent id={agentId} mark={agent} />
     </RACCheckboxGroup>
   );
 }

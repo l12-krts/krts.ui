@@ -1,4 +1,4 @@
-import { forwardRef, type ReactNode } from 'react';
+import { forwardRef, useContext, type ReactNode } from 'react';
 import { Button as RACButton, type ButtonProps as RACButtonProps, composeRenderProps } from 'react-aria-components';
 import { mergeProps } from 'react-aria';
 import { useGestureHandlers, type GestureOptions } from '../hooks/useGesture';
@@ -6,6 +6,9 @@ import { useSmoothPending } from '../hooks/usePerceived';
 import { useAnimatedWidth } from '../hooks/useAnimatedWidth';
 import { cn, focusRing } from '../lib/cn';
 import { Spinner } from './Spinner';
+import { AgentHintContext } from '../agent/registry';
+import { useButtonAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
 export type ButtonSize = 'xs' | 'sm' | 'md';
@@ -79,7 +82,7 @@ const gestureKeys: (keyof GestureProps)[] = [
   'onSwipe',
 ];
 
-export interface ButtonProps extends Omit<RACButtonProps, 'children'>, GestureProps {
+export interface ButtonProps extends Omit<RACButtonProps, 'children'>, GestureProps, KrtsAgentProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   /** Square button for a lone icon. Remember an `aria-label`. */
@@ -124,6 +127,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     holdTickInterval,
     animateWidth = !isIconOnly,
     style,
+    agent,
     ...rest
   } = props;
 
@@ -144,10 +148,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   const { contentRef, widthStyle, widthTransition } = useAnimatedWidth({ enabled: animateWidth });
 
   const merged = hasGestures ? mergeProps(racProps, pressHandlers, pointerProps) : racProps;
+  const agentProps = useButtonAgent({ mark: agent, hint: useContext(AgentHintContext), isPending, gestures: gestureOpts });
 
   return (
     <RACButton
       {...(merged as RACButtonProps)}
+      {...agentProps}
       ref={ref}
       isPending={isPending}
       data-spinner={showSpinner || undefined}

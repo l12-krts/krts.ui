@@ -15,7 +15,7 @@
     "resolveJsonModule": true,
     "types": ["vitest/globals", "@testing-library/jest-dom", "node"],
     "baseUrl": ".",
-    "paths": { "krts.ui": ["./src/index.ts"] }
+    "paths": { "krts.ui": ["./src/index.ts"], "krts.ui/agent": ["./src/agent/index.ts"] }
   },
   "include": ["src", "docs", "tests", "*.config.ts"]
 }

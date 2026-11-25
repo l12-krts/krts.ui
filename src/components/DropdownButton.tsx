@@ -5,8 +5,9 @@ import type { OverlayAnimation } from '../lib/config';
 import { Button, type ButtonProps } from './Button';
 import { ChevronDownIcon } from './icons';
 import { Menu, MenuTrigger } from './Menu';
+import type { KrtsAgentProps } from '../agent/types';
 
-export interface DropdownButtonProps<T> extends Omit<RACMenuProps<T>, 'children' | 'className'> {
+export interface DropdownButtonProps<T> extends Omit<RACMenuProps<T>, 'children' | 'className'>, KrtsAgentProps {
   /** Button label. */
   label: ReactNode;
   /** Menu items (`<MenuItem>`s or a render function). */
@@ -32,12 +33,13 @@ export function DropdownButton<T extends object>({
   isDisabled,
   placement = 'bottom start',
   className,
+  agent,
   ...menuProps
 }: DropdownButtonProps<T>) {
   const divider = variant === 'primary' ? 'bg-primary-line' : variant === 'danger' ? 'bg-danger-line' : 'bg-line';
   return (
     <MenuTrigger>
-      <Button variant={variant} size={size} isDisabled={isDisabled} className={cn('group gap-0 pr-0', size === 'md' ? 'pl-6' : 'pl-3.5', className)}>
+      <Button agent={agent} variant={variant} size={size} isDisabled={isDisabled} className={cn('group gap-0 pr-0', size === 'md' ? 'pl-6' : 'pl-3.5', className)}>
         <span>{label}</span>
         <span aria-hidden className={cn('w-px self-stretch', size === 'md' ? 'ml-3' : 'ml-2.5', divider)} />
         <span className={cn('grid place-items-center', size === 'md' ? 'w-11' : size === 'sm' ? 'w-9' : 'w-7')}>
@@ -74,11 +76,12 @@ export function SplitButton<T extends object>({
   onMenuAction,
   menuLabel = 'More options',
   className,
+  agent,
   ...menuProps
 }: SplitButtonProps<T>) {
   return (
     <div className={cn('inline-flex', className)} role="group">
-      <Button variant={variant} size={size} isDisabled={isDisabled} onPress={onAction} className="rounded-r-none border-r-0">
+      <Button agent={agent} variant={variant} size={size} isDisabled={isDisabled} onPress={onAction} className="rounded-r-none border-r-0">
         {label}
       </Button>
       <MenuTrigger>

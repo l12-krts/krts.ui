@@ -7,6 +7,8 @@ import {
   type TooltipTriggerComponentProps,
 } from 'react-aria-components';
 import { cn, composeTw } from '../lib/cn';
+import { clean, nodeText } from '../agent/dom';
+import { AgentHintContext } from '../agent/registry';
 
 export interface TooltipProps extends Omit<RACTooltipProps, 'children'> {
   children: ReactNode;
@@ -71,9 +73,11 @@ export function WithTooltip({
   shortcut?: ReactNode;
   delay?: number;
 }) {
+  // Agents read the tooltip as a hint on the trigger.
+  const hint = clean(`${nodeText(content)}${shortcut ? ` (${nodeText(shortcut)})` : ''}`);
   return (
     <TooltipTrigger delay={delay}>
-      {children}
+      <AgentHintContext.Provider value={hint || undefined}>{children}</AgentHintContext.Provider>
       <Tooltip placement={placement} shortcut={shortcut}>
         {content}
       </Tooltip>

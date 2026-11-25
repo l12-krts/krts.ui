@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, typ
 import { cn } from '../lib/cn';
 import { CheckIcon, XIcon } from './icons';
 import { Spinner } from './Spinner';
+import { nodeText } from '../agent/dom';
+import { useKrtsAgentComponent } from '../agent/registry';
 
 /* ── store ────────────────────────────────────────────────────────────── */
 
@@ -251,6 +253,27 @@ function ToastItem({
     return () => clearTimeout(timer);
   }, [removing, t.id]);
 
+  const agentProps = useKrtsAgentComponent(
+    !removing && {
+      component: 'toast',
+      label: () => nodeText(t.title),
+      description: () => nodeText(t.description),
+      state: () => ({
+        type: t.type === 'default' ? undefined : t.type,
+        action: t.action ? nodeText(t.action.label) : undefined,
+      }),
+      actions: {
+        dismiss: { safe: true, run: () => dismiss(t.id) },
+        pressAction: t.action && {
+          run: () => {
+            t.action!.onPress();
+            dismiss(t.id);
+          },
+        },
+      },
+    },
+  );
+
   const dir = isTop ? 1 : -1;
   const visible = mounted && !removing && !hiddenInStack;
   const scale = expanded || index <= 0 ? 1 : Math.max(0.8, 1 - index * 0.05);
@@ -258,6 +281,7 @@ function ToastItem({
 
   return (
     <li
+      {...agentProps}
       ref={ref}
       role={t.type === 'error' ? 'alert' : 'status'}
       aria-live={t.type === 'error' ? 'assertive' : 'polite'}

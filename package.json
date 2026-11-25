@@ -16,6 +16,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./agent": {
+      "types": "./dist/agent.d.ts",
+      "import": "./dist/agent.js",
+      "require": "./dist/agent.cjs"
+    },
     "./styles.css": "./dist/krts.css",
     "./theme.css": "./src/styles/theme.css",
     "./tailwind.css": "./src/styles/tailwind.css",
@@ -55,7 +60,9 @@
     "components",
     "ui",
     "gestures",
-    "hold-to-confirm"
+    "hold-to-confirm",
+    "ai-agents",
+    "webmcp"
   ],
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.4",

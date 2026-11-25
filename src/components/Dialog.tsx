@@ -12,6 +12,9 @@ import {
 import { cn, composeTw } from '../lib/cn';
 import { Button } from './Button';
 import { XIcon } from './icons';
+import { agentDomProps, useKrtsAgentId } from '../agent/registry';
+import { DialogAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
 export function DialogTrigger(props: DialogTriggerProps) {
   return <RACDialogTrigger {...props} />;
@@ -51,7 +54,7 @@ export function Modal({ size = 'md', className, children, ...props }: ModalProps
   );
 }
 
-export interface DialogProps extends Omit<RACDialogProps, 'children'> {
+export interface DialogProps extends Omit<RACDialogProps, 'children'>, KrtsAgentProps {
   title?: ReactNode;
   description?: ReactNode;
   children?: RACDialogProps['children'];
@@ -60,11 +63,13 @@ export interface DialogProps extends Omit<RACDialogProps, 'children'> {
   showClose?: boolean;
 }
 
-export function Dialog({ title, description, children, footer, showClose = true, className, ...props }: DialogProps) {
+export function Dialog({ title, description, children, footer, showClose = true, className, agent, ...props }: DialogProps) {
+  const agentId = useKrtsAgentId();
   return (
-    <RACDialog {...props} className={cn('relative flex flex-col gap-4 p-6 outline-none', className)}>
+    <RACDialog {...props} {...agentDomProps(agent, agentId)} className={cn('relative flex flex-col gap-4 p-6 outline-none', className)}>
       {(rp) => (
         <>
+          <DialogAgent id={agentId} mark={agent} close={rp.close} />
           {(title || description) && (
             <div className="flex flex-col gap-1.5 pr-8">
               {title && (
@@ -72,7 +77,11 @@ export function Dialog({ title, description, children, footer, showClose = true,
                   {title}
                 </Heading>
               )}
-              {description && <p className="text-[15px] leading-relaxed text-fg-muted">{description}</p>}
+              {description && (
+                <p data-krts-dialog-description className="text-[15px] leading-relaxed text-fg-muted">
+                  {description}
+                </p>
+              )}
             </div>
           )}
           {typeof children === 'function' ? children(rp) : children}

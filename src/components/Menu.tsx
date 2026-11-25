@@ -1,9 +1,10 @@
-import type { ReactNode } from 'react';
+import { useContext, type ReactNode } from 'react';
 import {
   Collection,
   Header,
   Keyboard,
   Menu as RACMenu,
+  RootMenuTriggerStateContext,
   MenuItem as RACMenuItem,
   MenuSection as RACMenuSection,
   MenuTrigger as RACMenuTrigger,
@@ -21,6 +22,8 @@ import { cn, composeTw } from '../lib/cn';
 import { CheckIcon, ChevronRightIcon } from './icons';
 import type { OverlayAnimation } from '../lib/config';
 import { Popover } from './Popover';
+import { useMenuAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
 export function MenuTrigger(props: MenuTriggerProps) {
   return <RACMenuTrigger {...props} />;
@@ -30,7 +33,7 @@ export function SubmenuTrigger(props: SubmenuTriggerProps) {
   return <RACSubmenuTrigger {...props} />;
 }
 
-export interface MenuProps<T> extends RACMenuProps<T> {
+export interface MenuProps<T> extends RACMenuProps<T>, KrtsAgentProps {
   placement?: PopoverProps['placement'];
   /** Set false when rendering a Menu inline (not in a popover). */
   withPopover?: boolean;
@@ -39,10 +42,21 @@ export interface MenuProps<T> extends RACMenuProps<T> {
   animation?: OverlayAnimation;
 }
 
-export function Menu<T extends object>({ placement = 'bottom start', withPopover = true, popoverClassName, animation, className, ...props }: MenuProps<T>) {
+export function Menu<T extends object>({
+  placement = 'bottom start',
+  withPopover = true,
+  popoverClassName,
+  animation,
+  className,
+  agent,
+  ...props
+}: MenuProps<T>) {
+  const trigger = useContext(RootMenuTriggerStateContext);
+  const agentProps = useMenuAgent(agent, trigger ? () => trigger.close() : undefined);
   const menu = (
     <RACMenu
       {...props}
+      {...agentProps}
       className={composeTw(className, 'max-h-[inherit] min-w-[13rem] overflow-auto p-1.5 outline-none')}
     />
   );

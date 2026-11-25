@@ -7,18 +7,23 @@ import {
 } from 'react-aria-components';
 import { cn, composeTw } from '../lib/cn';
 import { Description, FieldError, Label } from './Field';
+import { agentDomProps, useKrtsAgentId } from '../agent/registry';
+import { RadioGroupAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
-export interface RadioGroupProps extends Omit<RACRadioGroupProps, 'children'> {
+export interface RadioGroupProps extends Omit<RACRadioGroupProps, 'children'>, KrtsAgentProps {
   label?: ReactNode;
   description?: ReactNode;
   errorMessage?: string;
   children?: ReactNode;
 }
 
-export function RadioGroup({ label, description, errorMessage, children, className, ...props }: RadioGroupProps) {
+export function RadioGroup({ label, description, errorMessage, children, className, agent, ...props }: RadioGroupProps) {
+  const agentId = useKrtsAgentId();
   return (
     <RACRadioGroup
       {...props}
+      {...agentDomProps(agent, agentId)}
       className={composeTw(className, 'group flex flex-col gap-2.5')}
     >
       {label && <Label>{label}</Label>}
@@ -27,6 +32,7 @@ export function RadioGroup({ label, description, errorMessage, children, classNa
       </div>
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
+      <RadioGroupAgent id={agentId} mark={agent} />
     </RACRadioGroup>
   );
 }

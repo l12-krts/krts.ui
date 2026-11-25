@@ -8,7 +8,10 @@ export default defineConfig({
   base: './',
   plugins: [react(), tailwindcss()],
   resolve: {
-    alias: { 'krts.ui': fileURLToPath(new URL('../src/index.ts', import.meta.url)) },
+    alias: [
+      { find: /^krts\.ui\/agent$/, replacement: fileURLToPath(new URL('../src/agent/index.ts', import.meta.url)) },
+      { find: /^krts\.ui$/, replacement: fileURLToPath(new URL('../src/index.ts', import.meta.url)) },
+    ],
   },
   build: { outDir: 'dist', emptyOutDir: true },
 });

@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react';
 import { Switch as RACSwitch, type SwitchProps as RACSwitchProps } from 'react-aria-components';
 import { cn, composeTw } from '../lib/cn';
+import { useSwitchAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
-export interface SwitchProps extends Omit<RACSwitchProps, 'children'> {
+export interface SwitchProps extends Omit<RACSwitchProps, 'children'>, KrtsAgentProps {
   children?: ReactNode;
   size?: 'sm' | 'md';
 }
@@ -11,11 +13,13 @@ export interface SwitchProps extends Omit<RACSwitchProps, 'children'> {
  * From the Figma "Toggle" frames — including the "halfway" frame, where
  * the thumb stretches while pressed and then settles on the other side.
  */
-export function Switch({ children, size = 'md', className, ...props }: SwitchProps) {
+export function Switch({ children, size = 'md', className, agent, ...props }: SwitchProps) {
   const md = size === 'md';
+  const agentProps = useSwitchAgent(agent);
   return (
     <RACSwitch
       {...props}
+      {...agentProps}
       className={composeTw(
         className,
         'group flex items-center gap-2.5 text-base text-fg select-none disabled:opacity-50 [-webkit-tap-highlight-color:transparent]',

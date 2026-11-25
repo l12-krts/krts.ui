@@ -21,6 +21,9 @@ import {
 } from 'react-aria-components';
 import { cn, composeTw } from '../lib/cn';
 import { MinusIcon, PlusIcon, SearchIcon, XIcon } from './icons';
+import { agentDomProps, useKrtsAgentId } from '../agent/registry';
+import { NumberFieldAgent, useTextFieldAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
 export function Label(props: LabelProps) {
   return <RACLabel {...props} className={cn('text-sm font-medium text-fg select-none', props.className)} />;
@@ -68,7 +71,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(pro
   );
 });
 
-interface FieldChrome {
+interface FieldChrome extends KrtsAgentProps {
   label?: ReactNode;
   description?: ReactNode;
   errorMessage?: string | ((v: ValidationResult) => string);
@@ -91,10 +94,12 @@ export function TextField({
   startContent,
   endContent,
   className,
+  agent,
   ...props
 }: TextFieldProps) {
+  const agentProps = useTextFieldAgent(agent, 'textfield');
   return (
-    <RACTextField {...props} className={composeTw(className, 'group flex flex-col gap-1.5')}>
+    <RACTextField {...props} {...agentProps} className={composeTw(className, 'group flex flex-col gap-1.5')}>
       {label && <Label>{label}</Label>}
       <div className={cn(inputFrame, inputSizes[size])}>
         {startContent && <span className="pl-3.5 text-fg-subtle [&+input]:pl-2">{startContent}</span>}
@@ -112,9 +117,10 @@ export interface TextAreaFieldProps extends RACTextFieldProps, Omit<FieldChrome,
   rows?: number;
 }
 
-export function TextAreaField({ label, description, errorMessage, placeholder, rows = 4, className, ...props }: TextAreaFieldProps) {
+export function TextAreaField({ label, description, errorMessage, placeholder, rows = 4, className, agent, ...props }: TextAreaFieldProps) {
+  const agentProps = useTextFieldAgent(agent, 'textarea');
   return (
-    <RACTextField {...props} className={composeTw(className, 'group flex flex-col gap-1.5')}>
+    <RACTextField {...props} {...agentProps} className={composeTw(className, 'group flex flex-col gap-1.5')}>
       {label && <Label>{label}</Label>}
       <div className={cn(inputFrame, 'items-stretch')}>
         <RACTextArea
@@ -133,9 +139,10 @@ export interface SearchFieldProps extends RACSearchFieldProps, FieldChrome {
   placeholder?: string;
 }
 
-export function SearchField({ label, description, errorMessage, placeholder = 'Search…', size = 'md', className, ...props }: SearchFieldProps) {
+export function SearchField({ label, description, errorMessage, placeholder = 'Search…', size = 'md', className, agent, ...props }: SearchFieldProps) {
+  const agentProps = useTextFieldAgent(agent, 'searchfield');
   return (
-    <RACSearchField {...props} className={composeTw(className, 'group flex flex-col gap-1.5')}>
+    <RACSearchField {...props} {...agentProps} className={composeTw(className, 'group flex flex-col gap-1.5')}>
       {label && <Label>{label}</Label>}
       <div className={cn(inputFrame, inputSizes[size])}>
         <SearchIcon className="ml-3.5 shrink-0 text-fg-subtle" />
@@ -166,9 +173,10 @@ const stepper = cn(
   'disabled:opacity-40 focus-visible:bg-surface-hover',
 );
 
-export function NumberField({ label, description, errorMessage, placeholder, size = 'md', className, ...props }: NumberFieldProps) {
+export function NumberField({ label, description, errorMessage, placeholder, size = 'md', className, agent, ...props }: NumberFieldProps) {
+  const agentId = useKrtsAgentId();
   return (
-    <RACNumberField {...props} className={composeTw(className, 'group flex flex-col gap-1.5')}>
+    <RACNumberField {...props} {...agentDomProps(agent, agentId)} className={composeTw(className, 'group flex flex-col gap-1.5')}>
       {label && <Label>{label}</Label>}
       <Group className={cn(inputFrame, inputSizes[size], 'overflow-hidden')}>
         <RACButton slot="decrement" className={cn(stepper, 'border-r border-line')}>
@@ -181,6 +189,7 @@ export function NumberField({ label, description, errorMessage, placeholder, siz
       </Group>
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
+      <NumberFieldAgent id={agentId} mark={agent} />
     </RACNumberField>
   );
 }

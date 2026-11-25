@@ -10,8 +10,11 @@ import {
 } from 'react-aria-components';
 import { cn, composeTw } from '../lib/cn';
 import { ChevronDownIcon } from './icons';
+import { agentDomProps, useKrtsAgentId } from '../agent/registry';
+import { DisclosureAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
-export interface DisclosureProps extends Omit<RACDisclosureProps, 'children'> {
+export interface DisclosureProps extends Omit<RACDisclosureProps, 'children'>, KrtsAgentProps {
   title: ReactNode;
   children: ReactNode;
 }
@@ -20,9 +23,10 @@ export interface DisclosureProps extends Omit<RACDisclosureProps, 'children'> {
  * Expandable section. Height animates via `--disclosure-panel-height`
  * which React Aria measures for us.
  */
-export function Disclosure({ title, children, className, ...props }: DisclosureProps) {
+export function Disclosure({ title, children, className, agent, ...props }: DisclosureProps) {
+  const agentId = useKrtsAgentId();
   return (
-    <RACDisclosure {...props} className={composeTw(className, 'group border-b border-line-subtle')}>
+    <RACDisclosure {...props} {...agentDomProps(agent, agentId)} className={composeTw(className, 'group border-b border-line-subtle')}>
       <Heading className="m-0">
         <RACButton
           slot="trigger"
@@ -44,6 +48,7 @@ export function Disclosure({ title, children, className, ...props }: DisclosureP
           {children}
         </div>
       </DisclosurePanel>
+      <DisclosureAgent id={agentId} mark={agent} />
     </RACDisclosure>
   );
 }

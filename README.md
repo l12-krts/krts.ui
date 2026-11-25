@@ -141,6 +141,39 @@ toast('Conversation archived', { action: { label: 'Undo', onPress: restore } });
 toast.promise(deploy(), { loading: 'Deploying…', success: 'Live', error: 'Failed' });
 ```
 
+## Agents
+
+AI agents can read and drive krts.ui components through the components' own APIs, so they don't need screenshots or guessed clicks. Every component registers itself, and `krts.ui/agent` turns that into tools.
+
+```tsx
+import { createKrtsAgent, KrtsAgentApprovals, krtsAgentTools, registerKrtsAgentTools } from 'krts.ui/agent';
+
+const agent = createKrtsAgent();          // or createKrtsAgent({ root: () => panelEl })
+agent.snapshot();                         // what's on screen: refs, labels, state, choices, actions
+agent.query({ text: 'country' });         // find things, page through long lists
+await agent.act({ steps: [
+  { ref: 'Region', action: 'setValue', args: ['EU West'] },
+  { ref: 'Settings > Wi-Fi', action: 'setChecked', args: [false] },
+]});                                      // { ok, steps: [{ …, state }], appeared, gone }
+agent.subscribe((e) => …);                // changes, with source 'agent' | 'user'
+
+// Model APIs: send krtsAgentTools, route calls to agent.callTool(name, input)
+// Browser agents (WebMCP): registerKrtsAgentTools(agent)
+
+<KrtsAgentApprovals />                    // asks a person before confirm-marked steps run
+```
+
+| Mark | On a krts component | On any element (applies to everything inside) |
+| --- | --- | --- |
+| A person must approve changes | `agent={{ confirm: 'Deletes the project' }}` | `data-krts-agent-confirm="…"` |
+| Hidden from agents | `agent={{ hidden: true }}` | `data-krts-agent-hidden` |
+| Value shown as `"[redacted]"` | `agent={{ secret: true }}` | `data-krts-agent-secret` |
+| What agents read | `agent={{ label, description }}` | — |
+
+HoldButtons always need a person's OK. Password, card and one-time-code fields are secret by default. Agent steps fire a cancelable `krts:agentact` event first and `krts:agentchange` after, and `isKrtsAgentActing()` is true inside the `onChange` an agent caused. Make your own components drivable with `useKrtsAgentComponent`. The docs have a playground and a list of what each component exposes.
+
+The design follows the agent bridge in Vercel's [UI SDK](https://ui-sdk.dev) (snapshot, query and act), implemented natively on React Aria.
+
 ## Development
 
 ```bash

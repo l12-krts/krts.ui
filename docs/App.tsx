@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Dialog, DialogTrigger, Drawer, Link, Toaster, WithTooltip, cn } from 'krts.ui';
+import { KrtsAgentApprovals } from 'krts.ui/agent';
 import { groups } from './entries';
 import { SidebarContent, useScrollSpy } from './Sidebar';
 import { I, Ico, Section } from './ui';
@@ -43,6 +44,7 @@ export function App() {
   return (
     <div className="min-h-screen bg-bg text-fg">
       <Toaster />
+      <KrtsAgentApprovals />
 
       {/* Desktop sidebar */}
       <aside

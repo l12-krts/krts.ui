@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import {
+  composeRenderProps,
   SelectionIndicator,
   Tab as RACTab,
   TabList as RACTabList,
@@ -11,13 +12,26 @@ import {
   type TabsProps as RACTabsProps,
 } from 'react-aria-components';
 import { cn, composeTw } from '../lib/cn';
+import { agentDomProps, useKrtsAgentId } from '../agent/registry';
+import { TabsAgent } from '../agent/specs';
+import type { KrtsAgentProps } from '../agent/types';
 
 type TabsVariant = 'pill' | 'underline';
 
-export interface TabsProps extends RACTabsProps {}
+export interface TabsProps extends RACTabsProps, KrtsAgentProps {}
 
-export function Tabs({ className, ...props }: TabsProps) {
-  return <RACTabs {...props} className={composeTw(className, 'flex gap-4 orientation-horizontal:flex-col')} />;
+export function Tabs({ className, agent, children, ...props }: TabsProps) {
+  const agentId = useKrtsAgentId();
+  return (
+    <RACTabs {...props} {...agentDomProps(agent, agentId)} className={composeTw(className, 'flex gap-4 orientation-horizontal:flex-col')}>
+      {composeRenderProps(children, (content) => (
+        <>
+          {content}
+          <TabsAgent id={agentId} mark={agent} />
+        </>
+      ))}
+    </RACTabs>
+  );
 }
 
 export function TabList<T extends object>({ variant = 'pill', className, ...props }: TabListProps<T> & { variant?: TabsVariant }) {
